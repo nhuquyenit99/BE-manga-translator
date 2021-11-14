@@ -46,7 +46,7 @@ def get_distance_between_2_polys(poly_1: Poly, poly_2: Poly):
 
 # main 
 # get cordinates of polys
-file_name = '003'
+file_name = '001'
 f = open("outputs/{}/{}_text_detection.txt".format(file_name, file_name))
 lines = f.readlines()
 
@@ -110,17 +110,17 @@ for poly in polys:
     print(poly.__dict__)
 
 # crop image using cv2
-system('mkdir cv2-output-{}'.format(file_name))
+system('cd cv2-output && mkdir {} && cd ..'.format(file_name))
 img = cv2.imread('inputs/{}.jpg'.format(file_name))
 for idx, poly in enumerate(polys): 
     crop_img = img[poly.y2:poly.y1, poly.x1:poly.x2]
     # export images of bubbles
-    cv2.imwrite("cv2-output-{}/bubble-{}.png".format(file_name, idx), crop_img)
+    cv2.imwrite("cv2-output/{}/bubble-{}.png".format(file_name, idx), crop_img)
     # clear bubble in original image
     img = cv2.rectangle(img, (poly.x1, poly.y1), (poly.x2, poly.y2), (255,255,255), -1)
 
 # export blank img
-cv2.imwrite("cv2-output-{}/img-blank-bubble.png".format(file_name), img)
+cv2.imwrite("cv2-output/{}/img-blank-bubble.png".format(file_name), img)
 
 def get_params():
     params = ""
@@ -143,7 +143,7 @@ def get_params():
 # use tesseract to detect text
 texts = []
 for idx in range(len(polys)):
-    text = pytesseract.image_to_string(Image.open('cv2-output-{}/bubble-{}.png'.format(file_name, idx)), lang='jpn_vert', config=get_params())
+    text = pytesseract.image_to_string(Image.open('cv2-output/{}/bubble-{}.png'.format(file_name, idx)), lang='jpn_vert', config=get_params())
     texts.append(text)
     print('buble ', idx, text)
     
