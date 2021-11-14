@@ -3,6 +3,11 @@ from math import sqrt
 from os import system 
 import cv2
 
+from PIL import Image
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
+
 @dataclass
 class Poly:
 
@@ -39,9 +44,10 @@ def get_distance_between_2_polys(poly_1: Poly, poly_2: Poly):
     center_point_2 = poly_2.get_center_point()
     return sqrt((center_point_1[0] - center_point_2[0])**2 + (center_point_1[1] - center_point_2[1])**2)
 
-#main 
-#get cordinates of polys
-f = open("outputs/opm-1/opm-1_text_detection.txt")
+# main 
+# get cordinates of polys
+file_name = '003'
+f = open("outputs/{}/{}_text_detection.txt".format(file_name, file_name))
 lines = f.readlines()
 
 poly_cordinates = []
@@ -49,7 +55,7 @@ poly_center_cordinates = []
 polys = []
 distance_threshold = 70
 
-#process cordinates of polys
+# process cordinates of polys
 for line in lines: 
     cordinate_list = line[:-1].split(',')
     cordinate_list_int = []
@@ -68,7 +74,7 @@ for poly_cordinates in poly_cordinates:
     polys.append(poly)
     poly_center_cordinates.append(poly.get_center_point())
 
-#merge polys that are next to each other
+# merge polys that are next to each other
 merge_poly_idxs = []
 
 for idx, poly in enumerate(polys): 
@@ -78,13 +84,13 @@ for idx, poly in enumerate(polys):
         if get_distance_between_2_polys(poly, compare_poly) <= distance_threshold:
             merge_poly_idxs.append((idx, idx + 1 + compare_idx))
 
-#merge polys
+# merge polys
 print('merged_poly_idxs', merge_poly_idxs)
 
 for idx, compare_idx in merge_poly_idxs: 
     polys[compare_idx] = merge_poly(polys[idx], polys[compare_idx])
 
-#remove duplicated idx
+# remove duplicated idx
 
 def get_merged_idx(two_idx):
     return two_idx[0]
@@ -92,26 +98,52 @@ def get_merged_idx(two_idx):
 merge_idxs = map(get_merged_idx, merge_poly_idxs)
 merge_idxs = list(dict.fromkeys(merge_idxs))
 
-#remove merge idx
+# remove merge idx
 merge_idxs.sort(reverse=True)
 for idx in merge_idxs:
     print('Remove index', idx)
     polys.pop(idx)
 
-#print result
+# print result
 print('\nResult:')
 for poly in polys:
     print(poly.__dict__)
 
-#crop image using cv2
-system('mkdir cv2-output-opm-1')
-img = cv2.imread('inputs/opm-1.jpg')
+# crop image using cv2
+system('mkdir cv2-output-{}'.format(file_name))
+img = cv2.imread('inputs/{}.jpg'.format(file_name))
 for idx, poly in enumerate(polys): 
     crop_img = img[poly.y2:poly.y1, poly.x1:poly.x2]
     # export images of bubbles
-    cv2.imwrite("cv2-output-opm-1/bubble-" + str(idx) + ".png", crop_img)
-    #clear bubble in original image
+    cv2.imwrite("cv2-output-{}/bubble-{}.png".format(file_name, idx), crop_img)
+    # clear bubble in original image
     img = cv2.rectangle(img, (poly.x1, poly.y1), (poly.x2, poly.y2), (255,255,255), -1)
 
-#export clear img
-cv2.imwrite("cv2-output-opm-1/img-blank-bubble.png", img)
+# export blank img
+cv2.imwrite("cv2-output-{}/img-blank-bubble.png".format(file_name), img)
+
+def get_params():
+    params = ""
+    params += "--psm 12"
+
+    configParams = []
+    def configParam(param, val):
+      return "-c " + param + "=" + val
+
+    configParams.append(("chop_enable", "T"))
+    configParams.append(('use_new_state_cost','F'))
+    configParams.append(('segment_segcost_rating','F'))
+    configParams.append(('enable_new_segsearch','0'))
+    configParams.append(('textord_force_make_prop_words','F'))
+    configParams.append(('tessedit_char_blacklist', '}><L'))
+    configParams.append(('textord_debug_tabfind','0'))
+    params += " ".join([configParam(p[0], p[1]) for p in configParams])
+    return params
+
+# use tesseract to detect text
+texts = []
+for idx in range(len(polys)):
+    text = pytesseract.image_to_string(Image.open('cv2-output-{}/bubble-{}.png'.format(file_name, idx)), lang='jpn_vert', config=get_params())
+    texts.append(text)
+    print('buble ', idx, text)
+    

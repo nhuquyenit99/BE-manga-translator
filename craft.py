@@ -9,8 +9,8 @@ from craft_text_detector import Craft
 # )
 
 # set image path and export folder dic
-image_path = 'inputs/001.jpg'
-output_dir = 'outputs/001'
+image_path = 'inputs/003.jpg'
+output_dir = 'outputs/003'
 
 # create a craft instance
 craft = Craft(output_dir=output_dir, crop_type="poly", cuda=False)
