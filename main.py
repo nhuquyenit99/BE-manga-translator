@@ -11,7 +11,7 @@ def translate_manga(image_path: str, file_name: str):
     results = []
     for idx in range(len(polys)):
         result = {
-            "poly": polys[idx],
+            "poly": polys[idx].__dict__,
             "original_text": texts[idx],
             "translated_text": translated[idx]
         }
