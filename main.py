@@ -1,12 +1,21 @@
 from detect_text import detect_text
 from locate_bubbles import get_bubbles
 from translate import translate_text
+from craft import craft_text
 
-file_name = '003'
+def translate_manga(image_path: str, file_name: str):
+    craft_text(image_url=image_path, file_name=file_name)
+    polys = get_bubbles(file_name=file_name)
+    texts = detect_text(file_name=file_name, polyLen=len(polys))
+    translated = translate_text(texts=texts)
+    results = []
+    for idx in range(len(polys)):
+        result = {
+            "poly": polys[idx],
+            "original_text": texts[idx],
+            "translated_text": translated[idx]
+        }
+        results.append(result)
+    return results
 
-polys = get_bubbles(file_name=file_name)
-texts = detect_text(file_name=file_name, polyLen=len(polys))
-translated = translate_text(texts=texts)
-print('translated', translated)
-print('Done!')
 

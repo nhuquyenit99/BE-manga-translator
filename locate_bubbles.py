@@ -69,7 +69,7 @@ def get_bubbles(file_name: str):
 
     # crop image using cv2
     system('cd cv2-output && mkdir {} && cd ..'.format(file_name))
-    img = cv2.imread('inputs/{}.jpg'.format(file_name))
+    img = cv2.imread('{}.png'.format(file_name))
     for idx, poly in enumerate(polys): 
         crop_img = img[poly.y2:poly.y1, poly.x1:poly.x2]
         # export images of bubbles

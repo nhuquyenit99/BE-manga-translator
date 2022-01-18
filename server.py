@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from main import translate_manga
 
 class ImageInfo(BaseModel):
     url: str
+    file_name: str
 
 app = FastAPI()
 
@@ -17,5 +19,5 @@ async def read_item(item_id):
 
 
 @app.post('/translate/')
-async def translate_manga(image: ImageInfo):
-    return { "image_url": image.url }
+async def translate(image: ImageInfo):
+    return translate_manga(image_path=image.url, file_name=image.file_name)
