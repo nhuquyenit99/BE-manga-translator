@@ -1,5 +1,7 @@
 craft_text_detector==0.4.0
+fastapi==0.72.0
 numpy==1.17.4
 opencv_python==4.1.2.30
 Pillow==9.0.0
+pydantic==1.9.0
 pytesseract==0.3.8
