@@ -31,3 +31,5 @@ def detect_text(file_name: str, polyLen: number):
       print('bubble', idx, ":", text)
   return texts
 
+# detect_text("001", 6)
+
