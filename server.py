@@ -5,6 +5,7 @@ from main import translate_manga
 class ImageInfo(BaseModel):
     url: str
     file_name: str
+    page: int
 
 app = FastAPI()
 
@@ -20,4 +21,4 @@ async def read_item(item_id):
 
 @app.post('/translate/')
 async def translate(image: ImageInfo):
-    return translate_manga(image_path=image.url, file_name=image.file_name)
+    return translate_manga(image_path=image.url, file_name=image.file_name, page=image.page)
