@@ -4,10 +4,7 @@ import re
 import json
 
 def translate_single(text: str, index: int, result: list):
-    txt = re.sub(r"\n", "", text)
-    txt = re.sub(" ", "", text)
-    print(txt)
-    bs = subprocess.check_output(["node", "translate.js", txt])
+    bs = subprocess.check_output(["node", "translate.js", text])
     # print('translated', bs)
     result[index] = bs
     return bs
