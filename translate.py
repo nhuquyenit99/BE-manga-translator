@@ -1,14 +1,16 @@
 import subprocess
 from multiprocessing.pool import ThreadPool as Pool
 import re
+import json
 
 def translate_single(text: str, index: int, result: list):
     txt = re.sub(r"\n", "", text)
+    txt = re.sub(" ", "", text)
+    print(txt)
     bs = subprocess.check_output(["node", "translate.js", txt])
-    print('translated', bs)
+    # print('translated', bs)
     result[index] = bs
     return bs
-
 
 def translate_text(texts: list):
     pool = Pool(len(texts))
@@ -19,16 +21,5 @@ def translate_text(texts: list):
     pool.join()
     return result
 
-
-
-# def translate_text(texts: list):
-#     result = []
-#     for text in texts: 
-#         txt = re.sub(r"\n", "", text)
-#         print('text', text)
-#         bs = subprocess.check_output(["node", "translate.js", text])
-#         result.append(bs)
-#     return result
-
-# result = translate_text(['こんにちは', 'はじめまして', 'あなたはとても美しいです', 'あなたはとても美しいです', 'あなたはとても美しいです', 'あなたはとても美しいです', 'あなたはとても美しいです', 'あなたはとても美しいです','あなたはとても美しいです','あなたはとても美しいです'])
+# result = translate_text(['こんにちは', '店長 ! こ れ ボク の エプロ ン'])
 # print('result', result)
