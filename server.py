@@ -3,10 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from main import translate_manga
 
-class ImageInfo(BaseModel):
+class TranslateInfo(BaseModel):
     url: str
     file_name: str
     page: int
+    lang: str
 
 app = FastAPI()
 
@@ -34,5 +35,5 @@ async def read_item(item_id):
 
 
 @app.post('/translate/')
-async def translate(image: ImageInfo):
-    return translate_manga(image_path=image.url, file_name=image.file_name, page=image.page)
+async def translate(data: TranslateInfo):
+    return translate_manga(image_path=data.url, file_name=data.file_name, page=data.page, lang=data.lang)

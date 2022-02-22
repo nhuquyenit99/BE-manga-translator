@@ -5,7 +5,7 @@ from craft import craft_text
 import uuid
 import re
 
-def translate_manga(image_path: str, file_name: str, page: int):
+def translate_manga(image_path: str, file_name: str, page: int, lang: str = 'en'):
     craft_text(image_url=image_path, file_name=file_name)
     polys = get_bubbles(file_name=file_name)
     texts = detect_text(file_name=file_name, polyLen=len(polys))
@@ -17,7 +17,7 @@ def translate_manga(image_path: str, file_name: str, page: int):
         print('processed text', txt)
         processed_texts.append(txt)
 
-    translated = translate_text(texts=processed_texts)
+    translated = translate_text(texts=processed_texts, lang=lang)
     results = []
     for idx in range(len(polys)):
         id = uuid.uuid1()
